@@ -40,7 +40,7 @@ jobs:
           cargo +stable llvm-cov --workspace --all-features --locked --lcov --output-path lcov.info
           cargo +stable llvm-cov --workspace --all-features --locked --summary-only | tee coverage-summary.txt
       # actions/upload-artifact v4 is kept current by Dependabot.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: cfr-coverage
           path: |
