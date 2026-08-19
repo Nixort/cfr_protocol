@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 30
     steps:
       # actions/checkout v4.1.7, pinned by immutable commit SHA.
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       # dtolnay/rust-toolchain, pinned by immutable commit SHA.
       - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
