@@ -37,9 +37,9 @@ jobs:
         with:
           toolchain: stable
       - name: Install locked audit tool
-        run: cargo install cargo-audit --version 0.22.2 --locked
+        run: cargo +stable install cargo-audit --version 0.22.2 --locked
       - name: Fail on vulnerable, yanked, or unmaintained dependencies
-        run: cargo audit --deny warnings
+        run: cargo +stable audit --deny warnings
 
   policy:
     name: License and source policy
@@ -53,11 +53,11 @@ jobs:
         with:
           toolchain: stable
       - name: Install locked dependency-policy tool
-        run: cargo install cargo-deny --version 0.20.2 --locked
+        run: cargo +stable install cargo-deny --version 0.20.2 --locked
       - name: Enforce advisory, license, duplicate, ban, and source policy
-        run: cargo deny check all
+        run: cargo +stable deny check all
       - name: Record dependency graph for review
-        run: cargo tree --workspace --all-features --locked > dependency-tree.txt
+        run: cargo +stable tree --workspace --all-features --locked > dependency-tree.txt
       # actions/upload-artifact v4 is kept current by Dependabot.
       - uses: actions/upload-artifact@v4
         with:

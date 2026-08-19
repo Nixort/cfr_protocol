@@ -34,11 +34,11 @@ jobs:
           toolchain: stable
           components: llvm-tools-preview
       - name: Install locked coverage tool
-        run: cargo install cargo-llvm-cov --version 0.9.0 --locked
+        run: cargo +stable install cargo-llvm-cov --version 0.9.0 --locked
       - name: Generate LCOV and text report
         run: |
-          cargo llvm-cov --workspace --all-features --locked --lcov --output-path lcov.info
-          cargo llvm-cov --workspace --all-features --locked --summary-only | tee coverage-summary.txt
+          cargo +stable llvm-cov --workspace --all-features --locked --lcov --output-path lcov.info
+          cargo +stable llvm-cov --workspace --all-features --locked --summary-only | tee coverage-summary.txt
       # actions/upload-artifact v4 is kept current by Dependabot.
       - uses: actions/upload-artifact@v4
         with:
