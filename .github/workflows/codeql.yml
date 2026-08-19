@@ -28,13 +28,13 @@ jobs:
       # actions/checkout v4.1.7, pinned by immutable commit SHA.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: rust
           build-mode: manual
       - name: Build all Rust features
         run: cargo build --workspace --all-features --locked
       - name: Analyze
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:rust"
