@@ -1,0 +1,66 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+name: CFR supply chain
+
+on:
+  pull_request:
+    paths: ["Cargo.toml", "Cargo.lock", "crates/**/Cargo.toml", "deny.toml", ".github/workflows/security.yml"]
+  push:
+    branches: [main]
+    paths: ["Cargo.toml", "Cargo.lock", "crates/**/Cargo.toml", "deny.toml", ".github/workflows/security.yml"]
+  schedule:
+    - cron: "17 4 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cfr-supply-chain-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Advisory database audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # actions/checkout v4.1.7, pinned by immutable commit SHA.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # dtolnay/rust-toolchain, pinned by immutable commit SHA.
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: stable
+      - name: Install locked audit tool
+        run: cargo install cargo-audit --version 0.22.2 --locked
+      - name: Fail on vulnerable, yanked, or unmaintained dependencies
+        run: cargo audit --deny warnings
+
+  policy:
+    name: License and source policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      # actions/checkout v4.1.7, pinned by immutable commit SHA.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # dtolnay/rust-toolchain, pinned by immutable commit SHA.
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: stable
+      - name: Install locked dependency-policy tool
+        run: cargo install cargo-deny --version 0.20.2 --locked
+      - name: Enforce advisory, license, duplicate, ban, and source policy
+        run: cargo deny check all
+      - name: Record dependency graph for review
+        run: cargo tree --workspace --all-features --locked > dependency-tree.txt
+      # actions/upload-artifact v4 is kept current by Dependabot.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cfr-dependency-tree
+          path: dependency-tree.txt
+          if-no-files-found: error

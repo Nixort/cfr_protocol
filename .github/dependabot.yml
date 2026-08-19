@@ -1,0 +1,37 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    rebase-strategy: auto
+    labels: [dependencies, rust]
+    commit-message:
+      prefix: "build(deps)"
+    groups:
+      rust-patch-and-minor:
+        update-types: [patch, minor]
+
+  - package-ecosystem: github-actions
+    directory: /.github/workflows
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:15"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 3
+    rebase-strategy: auto
+    labels: [dependencies, ci]
+    commit-message:
+      prefix: "ci(deps)"

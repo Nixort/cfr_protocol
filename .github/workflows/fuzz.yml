@@ -1,0 +1,41 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+name: CFR fuzz
+
+on:
+  schedule:
+    - cron: "43 3 * * 5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cfr-fuzz-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fuzz:
+    name: Bounded parser and media fuzzing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      # actions/checkout v4.1.7, pinned by immutable commit SHA.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # dtolnay/rust-toolchain, pinned by immutable commit SHA.
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: nightly
+      - name: Install locked fuzzing tool
+        run: cargo install cargo-fuzz --version 0.13.1 --locked
+      - name: Exercise canonical parser and protocol targets
+        working-directory: fuzz
+        run: |
+          for target in codec_canonical op_parse message_parse frame_layout frame_open participant_inbound; do
+            cargo fuzz run "$target" -- -max_total_time=90
+          done

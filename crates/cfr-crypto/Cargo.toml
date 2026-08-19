@@ -1,0 +1,48 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+[package]
+name        = "cfr-crypto"
+description = "Cryptographic primitives for CFR: AEGIS-256, BLAKE3, X25519, Ed25519, ML-KEM"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+authors.workspace      = true
+
+[dependencies]
+aegis         = { workspace = true }
+blake3        = { workspace = true }
+x25519-dalek  = { workspace = true }
+ed25519-dalek = { workspace = true }
+zeroize       = { workspace = true }
+subtle        = { workspace = true }
+getrandom     = { workspace = true }
+thiserror     = { workspace = true }
+ml-kem        = { workspace = true, optional = true }
+
+[dev-dependencies]
+hex = { workspace = true }
+
+[features]
+default = ["std", "hwaes"]
+std     = ["thiserror/std", "blake3/std", "aegis/std"]
+# Hardware-accelerated AEGIS-256 (AES-NI / ARM crypto extensions) via the
+# reference C backend. Requires a C compiler at build time.
+hwaes   = []
+# Portable AEGIS-256 with no C toolchain requirement. Slower; constant-time
+# software AES.
+portable = ["aegis/pure-rust"]
+# Post-quantum profile: X25519 + ML-KEM-768 hybrid key encapsulation.
+pq      = ["dep:ml-kem"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lints]
+workspace = true

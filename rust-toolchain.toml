@@ -1,0 +1,10 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+[toolchain]
+channel = "1.85.0"
+components = ["clippy", "rustfmt"]

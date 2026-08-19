@@ -1,0 +1,75 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+[package]
+name    = "cfr-fuzz"
+version = "1.0.0-rc.1"
+edition = "2021"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[package.metadata.cargo-machete]
+# cargo-machete analyzes the package root and cannot trace imports confined to
+# individual `fuzz_targets` binaries.
+ignored = ["arbitrary", "cfr"]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary     = { version = "1.4", features = ["derive"] }
+cfr        = { path = "../crates/cfr" }
+cfr-core   = { path = "../crates/cfr-core" }
+cfr-crypto = { path = "../crates/cfr-crypto" }
+cfr-media  = { path = "../crates/cfr-media" }
+
+[[bin]]
+name = "codec_canonical"
+path = "fuzz_targets/codec_canonical.rs"
+test = false
+doc  = false
+bench = false
+
+[[bin]]
+name = "op_parse"
+path = "fuzz_targets/op_parse.rs"
+test = false
+doc  = false
+bench = false
+
+[[bin]]
+name = "message_parse"
+path = "fuzz_targets/message_parse.rs"
+test = false
+doc  = false
+bench = false
+
+[[bin]]
+name = "frame_layout"
+path = "fuzz_targets/frame_layout.rs"
+test = false
+doc  = false
+bench = false
+
+[[bin]]
+name = "frame_open"
+path = "fuzz_targets/frame_open.rs"
+test = false
+doc  = false
+bench = false
+
+[[bin]]
+name = "participant_inbound"
+path = "fuzz_targets/participant_inbound.rs"
+test = false
+doc  = false
+bench = false
+
+[profile.release]
+debug = true
+
+[workspace]

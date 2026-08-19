@@ -1,0 +1,49 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+name: CFR coverage
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cfr-coverage-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: LLVM coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      # actions/checkout v4.1.7, pinned by immutable commit SHA.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # dtolnay/rust-toolchain, pinned by immutable commit SHA.
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: stable
+          components: llvm-tools-preview
+      - name: Install locked coverage tool
+        run: cargo install cargo-llvm-cov --version 0.9.0 --locked
+      - name: Generate LCOV and text report
+        run: |
+          cargo llvm-cov --workspace --all-features --locked --lcov --output-path lcov.info
+          cargo llvm-cov --workspace --all-features --locked --summary-only | tee coverage-summary.txt
+      # actions/upload-artifact v4 is kept current by Dependabot.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cfr-coverage
+          path: |
+            lcov.info
+            coverage-summary.txt
+          if-no-files-found: error

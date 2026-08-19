@@ -1,0 +1,27 @@
+# Copyright Nixort <https://github.com/Nixort> 2026.
+#
+# License: GNU General Public License v3.0 only.
+# You can find the license file in the project root.
+#
+# Causal Frontier Ratchet (CFR).
+
+[package]
+name        = "cfr-media"
+description = "Codec-aware end-to-end frame encryption for CFR conferences"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+authors.workspace      = true
+
+[dependencies]
+cfr-crypto = { workspace = true }
+thiserror     = { workspace = true }
+
+[features]
+default = ["std"]
+std     = ["thiserror/std", "cfr-crypto/std"]
+
+[lints]
+workspace = true
