@@ -102,6 +102,24 @@ control flow in this library has not been audited for timing behaviour.
 copy was left by an optimiser, an allocator, a swap file or a hypervisor.
 Forward secrecy is a statement about the whole system, not about one type.
 
+**Persisted state at rest.** `PersistentConference` snapshots and WAL records
+contain the identity signing seed, conference seed, retained node keys,
+unretired prekeys, channel ratchets, media counters and replay windows. The
+store does not encrypt them. Unix `0700`/`0600` modes limit accidental access;
+they do not protect against a compromised account, disk image, backup operator
+or filesystem administrator. Use an encrypted volume or an application-owned
+encryption layer when that threat is in scope.
+
+Store checksums detect torn writes and accidental corruption. They are unkeyed
+and do not authenticate state against an attacker who can rewrite files and
+recompute checksums. The single-writer lock is advisory, so a process that
+deliberately ignores OS advisory locks is outside the integrity boundary.
+
+Old filesystem snapshots, copy-on-write extents and backups can retain key
+material after CFR has checkpointed or erased its live copy. Keeping them
+extends the practical compromise horizon and must be governed by the
+deployment's retention and secure-deletion policy.
+
 **Formal verification of this code.** The construction has a separate written
 analysis with reductions and an exhaustive symbolic check. That analysis is about
 the construction. This crate is the construction *implemented*, and the bridge
