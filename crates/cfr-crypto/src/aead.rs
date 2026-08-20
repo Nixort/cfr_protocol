@@ -22,7 +22,8 @@ type CipherShort = Aegis256<TAG_LEN_SHORT>;
 
 /// Encrypts `plaintext`, returning `ciphertext || tag`.
 pub fn aead_seal(key: &[u8; 32], nonce: &[u8; 32], plaintext: &[u8], ad: &[u8]) -> Vec<u8> {
-    let (mut ct, tag) = Cipher::new(key, nonce).encrypt(plaintext, ad);
+    let mut ct = plaintext.to_vec();
+    let tag = Cipher::new(key, nonce).encrypt_in_place(&mut ct, ad);
     ct.extend_from_slice(&tag);
     ct
 }
@@ -39,9 +40,11 @@ pub fn aead_open(
     }
     let (body, tag) = ciphertext.split_at(ciphertext.len() - TAG_LEN);
     let tag: [u8; TAG_LEN] = tag.try_into().map_err(|_| CryptoError::Truncated)?;
+    let mut plaintext = body.to_vec();
     Cipher::new(key, nonce)
-        .decrypt(body, &tag, ad)
-        .map_err(|_| CryptoError::BadTag)
+        .decrypt_in_place(&mut plaintext, &tag, ad)
+        .map_err(|_| CryptoError::BadTag)?;
+    Ok(plaintext)
 }
 
 /// Encrypts `buf` in place and returns the detached tag.
