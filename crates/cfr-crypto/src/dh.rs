@@ -36,6 +36,16 @@ impl DhSecret {
         Self(StaticSecret::from(bytes))
     }
 
+    /// Returns the raw key for the internal persistence codec.
+    ///
+    /// This deliberately secret-bearing hook is available only when the
+    /// application persistence feature is enabled.
+    #[cfg(feature = "persistence")]
+    #[doc(hidden)]
+    pub fn persistence_bytes(&self) -> [u8; 32] {
+        self.0.to_bytes()
+    }
+
     /// The matching public key.
     pub fn public(&self) -> DhPublic {
         DhPublic(PublicKey::from(&self.0).to_bytes())

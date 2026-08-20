@@ -23,6 +23,7 @@ thiserror     = { workspace = true }
 default = ["std"]
 std     = ["thiserror/std", "cfr-crypto/std"]
 pq      = ["cfr-crypto/pq"]
+persistence = ["cfr-crypto/persistence"]
 
 [lints]
 workspace = true

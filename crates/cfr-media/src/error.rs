@@ -39,6 +39,9 @@ pub enum Error {
     /// The per-sender frame counter would wrap. Rekey instead.
     #[cfg_attr(feature = "std", error("frame counter exhausted"))]
     CounterExhausted,
+    /// Persisted media state was malformed or violated a security invariant.
+    #[cfg_attr(feature = "std", error("malformed persisted media state"))]
+    MalformedState,
 }
 
 #[cfg(not(feature = "std"))]

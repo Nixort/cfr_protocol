@@ -32,6 +32,9 @@ hex = { workspace = true }
 [features]
 default = ["std", "hwaes"]
 std     = ["thiserror/std", "blake3/std", "aegis/std"]
+# Internal secret-state hooks used by the application persistence boundary.
+# This feature remains `no_std`; it does not add storage or serialization deps.
+persistence = []
 # Hardware-accelerated AEGIS-256 (AES-NI / ARM crypto extensions) via the
 # reference C backend. Requires a C compiler at build time.
 hwaes   = []

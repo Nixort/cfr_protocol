@@ -53,9 +53,9 @@ pub fn version_of(nodes: &BTreeSet<Oid>, membership_root: &[u8; 32]) -> [u8; 8] 
 ///
 /// Eviction erases the key material and ends local derivability of that version.
 pub struct NodeKeys {
-    keys: BTreeMap<Oid, Secret<KEY_LEN>>,
-    order: Vec<Oid>,
-    capacity: usize,
+    pub(crate) keys: BTreeMap<Oid, Secret<KEY_LEN>>,
+    pub(crate) order: Vec<Oid>,
+    pub(crate) capacity: usize,
 }
 
 impl Default for NodeKeys {

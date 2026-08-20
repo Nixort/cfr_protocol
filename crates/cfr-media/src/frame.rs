@@ -34,7 +34,7 @@ pub fn sender_tag(id: &SigPublic) -> SenderTag {
         .expect("hash has at least eight bytes")
 }
 
-fn context_id(version: [u8; 8]) -> ContextId {
+pub(crate) fn context_id(version: [u8; 8]) -> ContextId {
     let digest = hash(b"cfr/media/context", &[&version]);
     digest[..16]
         .try_into()
@@ -146,29 +146,29 @@ fn scatter(frame: &mut [u8], l: &Layout, data: &[u8]) {
     }
 }
 
-struct VersionKeys {
-    version: [u8; 8],
-    key: Secret<KEY_LEN>,
-    roster: BTreeMap<SenderTag, SigPublic>,
-    send: SendRatchet,
-    recv: BTreeMap<SenderTag, (RecvRatchet, Replay)>,
+pub(crate) struct VersionKeys {
+    pub(crate) version: [u8; 8],
+    pub(crate) key: Secret<KEY_LEN>,
+    pub(crate) roster: BTreeMap<SenderTag, SigPublic>,
+    pub(crate) send: SendRatchet,
+    pub(crate) recv: BTreeMap<SenderTag, (RecvRatchet, Replay)>,
     /// Frames sent under this context.
     ///
     /// The index is context-scoped to prevent nonce reuse after reselection.
-    counter: u64,
+    pub(crate) counter: u64,
 }
 
 /// Protects and opens media frames for one participant.
 ///
 /// Recent versions tolerate in-flight rekeys; eviction erases older key material.
 pub struct Protector {
-    sid: [u8; 32],
-    me: SigPublic,
-    my_tag: SenderTag,
-    versions: BTreeMap<ContextId, VersionKeys>,
-    order: VecDeque<ContextId>,
-    current: Option<ContextId>,
-    retain: usize,
+    pub(crate) sid: [u8; 32],
+    pub(crate) me: SigPublic,
+    pub(crate) my_tag: SenderTag,
+    pub(crate) versions: BTreeMap<ContextId, VersionKeys>,
+    pub(crate) order: VecDeque<ContextId>,
+    pub(crate) current: Option<ContextId>,
+    pub(crate) retain: usize,
 }
 
 impl Protector {

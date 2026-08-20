@@ -19,11 +19,11 @@ pub const MAX_OPS: usize = 4096;
 #[derive(Default)]
 pub struct Dag {
     /// Increments on mutation to invalidate derived caches.
-    epoch: u64,
-    ops: BTreeMap<Oid, Op>,
-    parents: BTreeMap<Oid, BTreeSet<Oid>>,
+    pub(crate) epoch: u64,
+    pub(crate) ops: BTreeMap<Oid, Op>,
+    pub(crate) parents: BTreeMap<Oid, BTreeSet<Oid>>,
     /// Cached transitive ancestor sets, cleared on mutation.
-    cache: RefCell<BTreeMap<Oid, BTreeSet<Oid>>>,
+    pub(crate) cache: RefCell<BTreeMap<Oid, BTreeSet<Oid>>>,
 }
 
 impl Dag {

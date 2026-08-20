@@ -70,16 +70,16 @@ pub enum Beacon {
     Unknown,
 }
 
-struct SendState {
-    chan: Chan,
+pub(crate) struct SendState {
+    pub(crate) chan: Chan,
 }
 
-struct RecvState {
-    eph: DhPublic,
-    chan: RecvChan,
+pub(crate) struct RecvState {
+    pub(crate) eph: DhPublic,
+    pub(crate) chan: RecvChan,
 }
 
-struct Derived {
+pub(crate) struct Derived {
     epoch: u64,
     guilty: usize,
     frontier: BTreeSet<Oid>,
@@ -91,7 +91,7 @@ struct Derived {
 /// Cache key for membership evaluated over one causal dependency set.
 type AuthorizationCacheKey = ([u8; 32], u64, usize);
 /// Memoized membership rosters keyed by causal past and derived-state epoch.
-type AuthorizationCache = BTreeMap<AuthorizationCacheKey, BTreeSet<SigPublic>>;
+pub(crate) type AuthorizationCache = BTreeMap<AuthorizationCacheKey, BTreeSet<SigPublic>>;
 
 /// A participant that has generated identity material but not yet joined.
 pub struct PendingJoin {
@@ -207,36 +207,36 @@ impl PendingJoin {
 
 /// A conference participant.
 pub struct Participant {
-    identity: SigSecret,
-    ipk: SigPublic,
-    sid: SessionId,
-    policy: Policy,
-    seed0: Secret<KEY_LEN>,
+    pub(crate) identity: SigSecret,
+    pub(crate) ipk: SigPublic,
+    pub(crate) sid: SessionId,
+    pub(crate) policy: Policy,
+    pub(crate) seed0: Secret<KEY_LEN>,
 
-    dag: Dag,
-    guilty: BTreeSet<SigPublic>,
+    pub(crate) dag: Dag,
+    pub(crate) guilty: BTreeSet<SigPublic>,
 
-    prekeys: PrekeyPool,
-    peer_prekeys: BTreeMap<SigPublic, (u32, DhPublic)>,
-    send: BTreeMap<SigPublic, SendState>,
-    recv: BTreeMap<SigPublic, RecvState>,
+    pub(crate) prekeys: PrekeyPool,
+    pub(crate) peer_prekeys: BTreeMap<SigPublic, (u32, DhPublic)>,
+    pub(crate) send: BTreeMap<SigPublic, SendState>,
+    pub(crate) recv: BTreeMap<SigPublic, RecvState>,
 
-    nodekeys: NodeKeys,
-    cparents: BTreeMap<Oid, BTreeSet<Oid>>,
-    absorbed: BTreeSet<Oid>,
-    missing: BTreeSet<Oid>,
+    pub(crate) nodekeys: NodeKeys,
+    pub(crate) cparents: BTreeMap<Oid, BTreeSet<Oid>>,
+    pub(crate) absorbed: BTreeSet<Oid>,
+    pub(crate) missing: BTreeSet<Oid>,
 
-    pending: Vec<Op>,
-    open_accusations: Vec<Op>,
+    pub(crate) pending: Vec<Op>,
+    pub(crate) open_accusations: Vec<Op>,
 
-    seen_versions: BTreeMap<[u8; 8], (BTreeSet<Oid>, [u8; 32])>,
-    last_version: [u8; 8],
+    pub(crate) seen_versions: BTreeMap<[u8; 8], (BTreeSet<Oid>, [u8; 32])>,
+    pub(crate) last_version: [u8; 8],
 
     /// Memoized membership rosters for equivalent causal dependency sets.
-    authz: RefCell<AuthorizationCache>,
+    pub(crate) authz: RefCell<AuthorizationCache>,
 
     /// Graph-derived values, invalidated when graph or accusation state changes.
-    derived: RefCell<Option<Derived>>,
+    pub(crate) derived: RefCell<Option<Derived>>,
 }
 
 impl Participant {
@@ -1158,7 +1158,7 @@ impl Participant {
         }
     }
 
-    fn check_accusation(&self, acc: &Op) -> bool {
+    pub(crate) fn check_accusation(&self, acc: &Op) -> bool {
         let Body::Accuse { who, coid, mk, seq } = &acc.body else {
             return false;
         };

@@ -22,6 +22,7 @@ thiserror     = { workspace = true }
 [features]
 default = ["std"]
 std     = ["thiserror/std", "cfr-crypto/std"]
+persistence = ["cfr-crypto/persistence"]
 
 [lints]
 workspace = true

@@ -29,6 +29,9 @@ pub mod frame;
 pub mod ratchet;
 pub mod replay;
 
+#[cfg(feature = "persistence")]
+mod state;
+
 pub use codec::{layout, Codec, Layout};
 pub use error::{Error, Result};
 pub use frame::{sender_tag, ContextId, Protector, SenderTag, Trailer, TRAILER_LEN};
