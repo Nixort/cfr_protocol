@@ -6,6 +6,12 @@ The name describes its two core algorithms: signed operations form a causal
 graph whose frontier derives the group key, while channel and media keys ratchet
 forward for forward secrecy.
 
+> **v1.0.0-rc.1:** this GitHub release candidate is ready for integration and
+> independent review, but is not yet a final API or wire-format stability
+> promise. See the [RC release notes](docs/releases/v1.0.0-rc.1.md) for the
+> compatibility contract, persistence guidance, validation scope, and crates.io
+> publishing boundary.
+
 ```toml
 [dependencies]
 cfr_protocol = "1.0.0-rc.1"
