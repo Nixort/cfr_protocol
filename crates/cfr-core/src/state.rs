@@ -13,7 +13,7 @@ use crate::dag::{Dag, MAX_OPS};
 use crate::error::{Error, Result};
 use crate::keys::{NodeKeys, OVERLAP};
 use crate::member::{Participant, RecvState, SendState, MAX_PENDING};
-use crate::membership::{Membership, Policy};
+use crate::membership::Policy;
 use crate::op::{Kind, Oid, Op, MAX_RECIPIENTS};
 use crate::prekey::{PrekeyPool, SEAL_AFTER};
 use alloc::collections::{BTreeMap, BTreeSet};
@@ -413,11 +413,6 @@ fn validate_contribution_state(participant: &Participant) -> Result<()> {
 
 fn validate_participant(participant: &Participant) -> Result<()> {
     validate_contribution_state(participant)?;
-    let members =
-        Membership::new(&participant.dag, &participant.policy, &participant.guilty).members();
-    if participant.prekeys.established.len() > members.len().saturating_add(1) {
-        return Err(invalid("state prekey established set is inconsistent"));
-    }
     for guilty in &participant.guilty {
         let proven = participant.dag.iter().any(|(_, operation)| {
             matches!(
@@ -601,5 +596,22 @@ mod tests {
         // The first TLV field is a 32-byte identity seed: tag + u32 length.
         substituted[5] ^= 1;
         assert!(Participant::import_persistence_state(&substituted).is_err());
+    }
+
+    #[test]
+    fn departed_prekey_peers_do_not_make_valid_state_unloadable() {
+        let (mut participant, _) = Participant::create(Policy::leaderless(2)).unwrap();
+        for value in 1..=8 {
+            participant
+                .prekeys
+                .established
+                .insert(SigPublic::from_bytes([value; 32]));
+        }
+        let state = participant.export_persistence_state().unwrap();
+        let restored = Participant::import_persistence_state(&state).unwrap();
+        assert_eq!(
+            restored.prekeys.established,
+            participant.prekeys.established
+        );
     }
 }

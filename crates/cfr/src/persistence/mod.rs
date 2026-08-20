@@ -525,3 +525,50 @@ impl PersistentConference {
         Ok(result)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::store::Fault;
+    use super::*;
+    use std::fs;
+    use std::path::PathBuf;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static NEXT_DIRECTORY: AtomicU64 = AtomicU64::new(1);
+
+    struct TestDirectory(PathBuf);
+
+    impl TestDirectory {
+        fn new() -> Self {
+            let id = NEXT_DIRECTORY.fetch_add(1, Ordering::Relaxed);
+            Self(std::env::temp_dir().join(format!(
+                "cfr-persistence-atomic-{}-{id}",
+                std::process::id()
+            )))
+        }
+    }
+
+    impl Drop for TestDirectory {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[test]
+    fn failed_sync_does_not_advance_live_or_recovered_state() {
+        let directory = TestDirectory::new();
+        let mut conference =
+            PersistentConference::create(&directory.0, Policy::leaderless(2)).unwrap();
+        let sequence = conference.sequence();
+        let version = conference.version();
+        conference.store.inject(Fault::BeforeSync);
+        assert!(matches!(conference.tick(), Err(Error::Io(_))));
+        assert_eq!(conference.sequence(), sequence);
+        assert_eq!(conference.version(), version);
+        drop(conference);
+
+        let reopened = PersistentConference::open(&directory.0).unwrap();
+        assert_eq!(reopened.sequence(), sequence);
+        assert_eq!(reopened.version(), version);
+    }
+}

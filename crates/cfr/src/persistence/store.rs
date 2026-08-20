@@ -62,7 +62,7 @@ pub(crate) struct Store {
 
 #[cfg(test)]
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum Fault {
+pub(super) enum Fault {
     BeforeWrite,
     BeforeSync,
 }
@@ -326,7 +326,15 @@ fn read_bounded(path: &Path, limit: u64) -> Result<Vec<u8>> {
     let capacity = usize::try_from(metadata.len())
         .map_err(|_| Error::Corrupt("persisted file length exceeds platform width"))?;
     let mut bytes = Vec::with_capacity(capacity);
-    File::open(path)?.read_to_end(&mut bytes)?;
+    File::open(path)?
+        .take(limit.saturating_add(1))
+        .read_to_end(&mut bytes)?;
+    if u64::try_from(bytes.len())
+        .map_err(|_| Error::Corrupt("persisted file length exceeds u64"))?
+        > limit
+    {
+        return Err(Error::Corrupt("persisted file exceeds hard limit"));
+    }
     Ok(bytes)
 }
 
@@ -353,7 +361,11 @@ impl Store {
         secure_directory_builder().create(path)?;
         validate_mode(path, true)?;
         if let Some(parent) = path.parent() {
-            sync_directory(parent)?;
+            sync_directory(if parent.as_os_str().is_empty() {
+                Path::new(".")
+            } else {
+                parent
+            })?;
         }
         let lock = acquire_lock(path)?;
         let snapshot = encode_snapshot(sequence, payload)?;
@@ -380,7 +392,12 @@ impl Store {
         }
         let lock = acquire_lock(path)?;
         let wal_path = path.join(WAL_FILE);
-        let wal_bytes = read_bounded(&wal_path, HARD_MAX_WAL_BYTES)?;
+        let wal_bytes = match read_bounded(&wal_path, HARD_MAX_WAL_BYTES) {
+            Err(Error::Io(error)) if error.kind() == std::io::ErrorKind::NotFound => {
+                return Err(Error::Corrupt("WAL file is missing"));
+            }
+            result => result?,
+        };
         let (records, valid_length) = scan_wal(&wal_bytes)?;
         let wal = secure_open_options().open(&wal_path)?;
         if valid_length != wal_bytes.len() {
@@ -505,7 +522,7 @@ impl Store {
     }
 
     #[cfg(test)]
-    fn inject(&mut self, fault: Fault) {
+    pub(super) fn inject(&mut self, fault: Fault) {
         self.fault = Some(fault);
     }
 
