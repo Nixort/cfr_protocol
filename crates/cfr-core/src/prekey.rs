@@ -15,11 +15,11 @@ pub const SEAL_AFTER: u32 = 64;
 
 /// A single prekey generation.
 pub struct PrekeyPool {
-    generation: u32,
-    secret: Option<DhSecret>,
-    public: DhPublic,
-    established: BTreeSet<SigPublic>,
-    age: u32,
+    pub(crate) generation: u32,
+    pub(crate) secret: Option<DhSecret>,
+    pub(crate) public: DhPublic,
+    pub(crate) established: BTreeSet<SigPublic>,
+    pub(crate) age: u32,
 }
 
 impl PrekeyPool {

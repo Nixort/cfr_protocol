@@ -20,6 +20,9 @@ extern crate alloc;
 
 mod conference;
 
+#[cfg(feature = "std")]
+pub mod persistence;
+
 pub use conference::{Conference, Error, Joining, Message, Recipient, Result};
 
 pub use cfr_core::{

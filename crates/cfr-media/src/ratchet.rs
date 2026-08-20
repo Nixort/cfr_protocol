@@ -21,8 +21,8 @@ fn base(group: &Secret<KEY_LEN>, sender: &SigPublic) -> Secret<KEY_LEN> {
 
 /// The sending side of a sender-specific media ratchet.
 pub struct SendRatchet {
-    chain: Secret<KEY_LEN>,
-    epoch: u64,
+    pub(crate) chain: Secret<KEY_LEN>,
+    pub(crate) epoch: u64,
 }
 
 impl SendRatchet {
@@ -59,8 +59,8 @@ impl SendRatchet {
 /// The caller commits a cloned instance only after frame authentication.
 #[derive(Clone)]
 pub struct RecvRatchet {
-    chain: Secret<KEY_LEN>,
-    epoch: u64,
+    pub(crate) chain: Secret<KEY_LEN>,
+    pub(crate) epoch: u64,
 }
 
 impl RecvRatchet {

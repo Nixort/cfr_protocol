@@ -16,8 +16,8 @@ pub const MAX_BUFFERED: usize = 64;
 
 /// One direction of a pairwise channel.
 pub struct Chan {
-    chain: Secret<KEY_LEN>,
-    next: u64,
+    pub(crate) chain: Secret<KEY_LEN>,
+    pub(crate) next: u64,
 }
 
 impl Chan {
@@ -74,8 +74,8 @@ impl Chan {
 
 /// The receiving side: a ratchet plus a bounded reordering buffer.
 pub struct RecvChan {
-    chan: Chan,
-    buffer: BTreeMap<u64, Vec<u8>>,
+    pub(crate) chan: Chan,
+    pub(crate) buffer: BTreeMap<u64, Vec<u8>>,
 }
 
 impl RecvChan {

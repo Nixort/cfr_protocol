@@ -42,6 +42,7 @@ getrandom = { version = "0.4", default-features = false }
 thiserror = { version = "2.0", default-features = false }
 arbitrary = { version = "1.4", features = ["derive"] }
 hex = { version = "0.4", default-features = false, features = ["alloc"] }
+fs2 = { version = "0.4.3", default-features = false }
 
 [workspace.lints.rust]
 missing_docs = "warn"

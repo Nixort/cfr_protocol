@@ -13,9 +13,9 @@ pub const WINDOW: u64 = 64;
 /// A sliding replay window over authenticated frame indices.
 #[derive(Debug, Default, Clone)]
 pub struct Replay {
-    high: u64,
-    seen: u64,
-    started: bool,
+    pub(crate) high: u64,
+    pub(crate) seen: u64,
+    pub(crate) started: bool,
 }
 
 impl Replay {

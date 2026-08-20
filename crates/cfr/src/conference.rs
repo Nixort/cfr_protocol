@@ -259,7 +259,9 @@ impl Conference {
 
     /// Leaves the conference.
     pub fn leave(&mut self) -> Result<Message> {
-        Ok(self.core.leave()?.into())
+        let message = self.core.leave()?;
+        self.refresh_media();
+        Ok(message.into())
     }
 
     /// Contributes fresh entropy, moving the key forward.
@@ -322,5 +324,69 @@ impl Conference {
     /// this; it never needs to be a participant.
     pub fn inspect(packet: &[u8]) -> Result<Trailer> {
         Ok(Protector::inspect(packet)?)
+    }
+
+    #[cfg(feature = "std")]
+    pub(crate) fn export_persistence_state(&self) -> Result<Vec<u8>> {
+        let core = self.core.export_persistence_state()?;
+        let media = self.media.export_persistence_state()?;
+        let mut writer = cfr_core::codec::Writer::new();
+        writer.bytes(&core).bytes(&media);
+        Ok(writer.finish())
+    }
+
+    #[cfg(feature = "std")]
+    pub(crate) fn import_persistence_state(bytes: &[u8]) -> Result<Self> {
+        let mut reader = cfr_core::codec::Reader::new(bytes);
+        let core_bytes = reader.bytes()?;
+        let media_bytes = reader.bytes()?;
+        reader.finish()?;
+
+        let core = Participant::import_persistence_state(core_bytes)?;
+        let media = Protector::import_persistence_state(media_bytes)?;
+        let group_key = core.group_key();
+        let members = core.members();
+        media.validate_persistence_binding(
+            core.session_id(),
+            core.identity(),
+            group_key
+                .as_ref()
+                .map(|key| (core.version(), key, &members)),
+        )?;
+        Ok(Self { core, media })
+    }
+}
+
+#[cfg(all(test, feature = "std"))]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn conference_state_preserves_identity_and_media_counter() {
+        let (mut conference, _) = Conference::create(Policy::leaderless(2)).unwrap();
+        let first = conference
+            .protect(Codec::Generic, b"persistent frame", false)
+            .unwrap();
+        let state = conference.export_persistence_state().unwrap();
+        let mut restored = Conference::import_persistence_state(&state).unwrap();
+        assert_eq!(restored.identity(), conference.identity());
+        assert_eq!(restored.session_id(), conference.session_id());
+        assert_eq!(restored.members(), conference.members());
+        assert_eq!(restored.version(), conference.version());
+        assert_eq!(restored.export_persistence_state().unwrap(), state);
+
+        let second = restored
+            .protect(Codec::Generic, b"persistent frame", false)
+            .unwrap();
+        assert_eq!(Protector::inspect(&first).unwrap().counter, 0);
+        assert_eq!(Protector::inspect(&second).unwrap().counter, 1);
+    }
+
+    #[test]
+    fn conference_state_rejects_trailing_bytes() {
+        let (conference, _) = Conference::create(Policy::leaderless(2)).unwrap();
+        let mut state = conference.export_persistence_state().unwrap();
+        state.push(0);
+        assert!(Conference::import_persistence_state(&state).is_err());
     }
 }

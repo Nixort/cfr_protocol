@@ -35,6 +35,9 @@ pub mod op;
 pub mod prekey;
 pub mod wire;
 
+#[cfg(feature = "persistence")]
+mod state;
+
 pub use checkpoint::{
     media_context_id, Capabilities, CheckpointCertificate, CheckpointSignature, ProtocolProfile,
     ResumptionRecord, PROTOCOL_ID,

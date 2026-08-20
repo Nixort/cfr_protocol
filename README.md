@@ -86,7 +86,7 @@ build rather than the call.
 
 | feature | effect |
 |---|---|
-| `std` *(default)* | standard library; without it the crates are `no_std` + `alloc` |
+| `std` *(default)* | standard library and `cfr::persistence`; without it the crates are `no_std` + `alloc` |
 | `hwaes` *(default)* | AEGIS-256 with hardware AES; needs a C compiler |
 | `portable` | AEGIS-256 in pure Rust, no C toolchain |
 | `pq` | X25519 + ML-KEM-768 hybrid |

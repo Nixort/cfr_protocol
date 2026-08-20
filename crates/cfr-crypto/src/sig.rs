@@ -41,6 +41,16 @@ impl SigSecret {
         Self(SigningKey::from_bytes(seed))
     }
 
+    /// Returns the seed for the internal persistence codec.
+    ///
+    /// This deliberately secret-bearing hook is available only when the
+    /// application persistence feature is enabled.
+    #[cfg(feature = "persistence")]
+    #[doc(hidden)]
+    pub fn persistence_seed(&self) -> [u8; 32] {
+        self.0.to_bytes()
+    }
+
     /// The matching identity public key.
     pub fn public(&self) -> SigPublic {
         SigPublic(self.0.verifying_key().to_bytes())

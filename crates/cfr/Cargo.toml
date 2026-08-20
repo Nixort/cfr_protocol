@@ -23,13 +23,23 @@ cfr-core   = { workspace = true }
 cfr-crypto = { workspace = true }
 cfr-media  = { workspace = true }
 thiserror     = { workspace = true }
+fs2           = { workspace = true, optional = true }
 
 [dev-dependencies]
 hex = { workspace = true }
 
 [features]
 default = ["std"]
-std     = ["thiserror/std", "cfr-core/std", "cfr-crypto/std", "cfr-media/std"]
+std     = [
+  "thiserror/std",
+  "cfr-core/std",
+  "cfr-core/persistence",
+  "cfr-crypto/std",
+  "cfr-crypto/persistence",
+  "cfr-media/std",
+  "cfr-media/persistence",
+  "dep:fs2",
+]
 # Post-quantum profile: X25519 + ML-KEM-768 hybrid.
 pq      = ["cfr-core/pq", "cfr-crypto/pq"]
 
