@@ -9,10 +9,10 @@
 
 #![allow(missing_docs)]
 
-use cfr::persistence::{
+use cfr_protocol::persistence::{
     Error, InboundId, PendingDelivery, PersistenceOptions, PersistentConference,
 };
-use cfr::{Codec, Joining, Policy, Recipient, SigPublic};
+use cfr_protocol::{Codec, Joining, Policy, Recipient, SigPublic};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};

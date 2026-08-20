@@ -11,9 +11,9 @@ use std::env;
 use std::process::ExitCode;
 use std::time::{Duration, Instant};
 
-use cfr::layers::core::Message as CoreMessage;
-use cfr::{Codec, Conference, Joining, Message, Policy, Recipient};
 use cfr_crypto::SigPublic;
+use cfr_protocol::layers::core::Message as CoreMessage;
+use cfr_protocol::{Codec, Conference, Joining, Message, Policy, Recipient};
 
 const DEFAULT_PARTICIPANTS: usize = 100;
 const DEFAULT_MEDIA_ROUNDS: u32 = 200;

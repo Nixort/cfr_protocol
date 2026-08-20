@@ -41,7 +41,7 @@ coverage:
 	cargo llvm-cov --workspace --all-features --locked --summary-only
 
 package:
-	cargo package --allow-dirty --locked --no-verify -p cfr-crypto
+	cargo package --allow-dirty --locked --no-verify -p cfr_protocol-crypto
 
 # Coverage-guided parser and media fuzzing. Requires nightly Rust and cargo-fuzz;
 # each target receives the same bounded execution budget.
@@ -52,7 +52,7 @@ fuzz:
 
 # Runs the current scale benchmark.
 bench:
-	cargo run -p cfr --release --locked --example scale -- --participants 100 --rounds 200
+	cargo run -p cfr_protocol --release --locked --example scale -- --participants 100 --rounds 200
 
 docs:
 	cargo doc --workspace --all-features --no-deps --locked

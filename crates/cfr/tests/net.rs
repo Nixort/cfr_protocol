@@ -23,7 +23,7 @@
     clippy::uninlined_format_args
 )]
 
-use cfr::{Codec, Conference, Event, Joining, Policy, Recipient, SigPublic};
+use cfr_protocol::{Codec, Conference, Event, Joining, Policy, Recipient, SigPublic};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 /// A tiny deterministic PRNG. Reproducibility matters more than quality here:
@@ -112,7 +112,7 @@ impl Net {
         }
     }
 
-    pub fn send(&mut self, from: SigPublic, out: Vec<cfr::Message>) {
+    pub fn send(&mut self, from: SigPublic, out: Vec<cfr_protocol::Message>) {
         for m in out {
             let targets: Vec<SigPublic> = match m.to {
                 Recipient::Everyone => self.peers.keys().filter(|k| **k != from).copied().collect(),
@@ -197,7 +197,7 @@ impl Net {
 
     pub fn act<F>(&mut self, who: SigPublic, f: F)
     where
-        F: FnOnce(&mut Conference) -> Vec<cfr::Message>,
+        F: FnOnce(&mut Conference) -> Vec<cfr_protocol::Message>,
     {
         let out = f(self.peers.get_mut(&who).expect("member"));
         self.send(who, out);

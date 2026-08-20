@@ -9,12 +9,12 @@
 
 #![allow(missing_docs)]
 
-use cfr::layers::crypto::hash;
-use cfr::persistence::{
+use cfr_protocol::layers::crypto::hash;
+use cfr_protocol::persistence::{
     Error, PersistenceOptions, PersistentConference, VersionKind,
     CURRENT_PERSISTENCE_SCHEMA_VERSION,
 };
-use cfr::Policy;
+use cfr_protocol::Policy;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};

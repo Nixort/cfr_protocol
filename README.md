@@ -8,17 +8,17 @@ forward for forward secrecy.
 
 ```toml
 [dependencies]
-cfr = "1.0.0-rc.1"
+cfr_protocol = "1.0.0-rc.1"
 ```
 
 ```rust
-use cfr::{Codec, Conference, Policy, Recipient};
+use cfr_protocol::{Codec, Conference, Policy, Recipient};
 
 // Alice starts a conference.
 let (mut alice, _bootstrap) = Conference::create(Policy::leaderless(2))?;
 
 // Bob generates identity material out of band and hands over his package.
-let bob = cfr::Joining::new(Policy::leaderless(2))?;
+let bob = cfr_protocol::Joining::new(Policy::leaderless(2))?;
 let out = alice.invite(&bob.key_package())?;
 
 let welcome = out.iter()
@@ -57,7 +57,7 @@ without holding any key, and cannot alter a byte of what it reads.
 
 | crate | contents |
 |---|---|
-| `cfr` | the `Conference` type: one participant's whole view of a call |
+| `cfr_protocol` | the `Conference` type: one participant's whole view of a call |
 | `cfr-core` | the key management construction |
 | `cfr-media` | codec-aware frame protection |
 | `cfr-crypto` | primitives, all from established crates |
@@ -86,7 +86,7 @@ build rather than the call.
 
 | feature | effect |
 |---|---|
-| `std` *(default)* | standard library and `cfr::persistence`; without it the crates are `no_std` + `alloc` |
+| `std` *(default)* | standard library and `cfr_protocol::persistence`; without it the crates are `no_std` + `alloc` |
 | `hwaes` *(default)* | AEGIS-256 with hardware AES; needs a C compiler |
 | `portable` | AEGIS-256 in pure Rust, no C toolchain |
 | `pq` | X25519 + ML-KEM-768 hybrid |
@@ -95,9 +95,9 @@ build rather than the call.
 
 ```bash
 cargo test --workspace                     # 180 passing tests; one ignored timing profile
-cargo test -p cfr --release             # includes the randomized suite
+cargo test -p cfr_protocol --release             # includes the randomized suite
 cargo +nightly fuzz run codec_canonical    # six coverage-guided targets
-cargo run -p cfr --release --example scale
+cargo run -p cfr_protocol --release --example scale
 ```
 
 The randomized suite runs a hostile network — loss, reordering, partition,

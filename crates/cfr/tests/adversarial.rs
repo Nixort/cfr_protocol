@@ -27,8 +27,8 @@
 
 mod net;
 
-use cfr::layers::media::TRAILER_LEN;
-use cfr::{Beacon, Codec, Conference, Joining, Policy};
+use cfr_protocol::layers::media::TRAILER_LEN;
+use cfr_protocol::{Beacon, Codec, Conference, Joining, Policy};
 use net::Net;
 
 fn pol() -> Policy {
@@ -131,7 +131,7 @@ fn a4_a_member_cannot_impersonate_another_sender() {
         .protect(Codec::Generic, b"forged", false)
         .unwrap();
     let n = sealed.len();
-    let tag = cfr::layers::media::sender_tag(&a);
+    let tag = cfr_protocol::layers::media::sender_tag(&a);
     sealed[n - TRAILER_LEN..n - TRAILER_LEN + tag.len()].copy_from_slice(&tag);
 
     assert!(
@@ -239,7 +239,7 @@ fn a8_a_key_package_cannot_be_rewritten() {
     let joining = Joining::new(pol()).unwrap();
     let kp = joining.key_package();
     let mut forged = kp.clone();
-    forged.prekey = cfr::layers::crypto::DhPublic::from_bytes([0x42u8; 32]);
+    forged.prekey = cfr_protocol::layers::crypto::DhPublic::from_bytes([0x42u8; 32]);
 
     let (mut alice, _) = Conference::create(pol()).unwrap();
     assert!(

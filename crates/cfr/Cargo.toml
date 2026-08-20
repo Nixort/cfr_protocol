@@ -6,7 +6,7 @@
 # Causal Frontier Ratchet (CFR).
 
 [package]
-name        = "cfr"
+name        = "cfr_protocol"
 description = "Leaderless causal-frontier group key agreement with ratcheted, codec-aware media protection"
 version.workspace      = true
 edition.workspace      = true

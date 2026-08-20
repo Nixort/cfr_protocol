@@ -32,7 +32,7 @@
 
 mod net;
 
-use cfr::{Codec, Policy};
+use cfr_protocol::{Codec, Policy};
 use net::{Net, Rng};
 
 const CODECS: [Codec; 7] = [
@@ -47,7 +47,7 @@ const CODECS: [Codec; 7] = [
 
 struct Checks {
     count: usize,
-    known: std::collections::BTreeSet<cfr::SigPublic>,
+    known: std::collections::BTreeSet<cfr_protocol::SigPublic>,
 }
 
 impl Checks {
@@ -211,10 +211,10 @@ fn one_run(seed: u64, steps: usize, checks: &mut Checks) {
             7 => {
                 if let Some(w) = rng.pick(&ids) {
                     if net.offline.remove(&w) {
-                        net.act(w, cfr::Conference::resync);
+                        net.act(w, cfr_protocol::Conference::resync);
                         let others: Vec<_> = net.online();
                         for o in others {
-                            net.act(o, cfr::Conference::resync);
+                            net.act(o, cfr_protocol::Conference::resync);
                         }
                     }
                 }
@@ -232,10 +232,10 @@ fn one_run(seed: u64, steps: usize, checks: &mut Checks) {
                     }
                     net.partitions.clear();
                     for o in net.online() {
-                        net.act(o, cfr::Conference::resync);
+                        net.act(o, cfr_protocol::Conference::resync);
                     }
                     for o in net.online() {
-                        net.act(o, cfr::Conference::resync);
+                        net.act(o, cfr_protocol::Conference::resync);
                     }
                 }
             }
@@ -246,7 +246,7 @@ fn one_run(seed: u64, steps: usize, checks: &mut Checks) {
                 }
                 net.loss_percent = 0;
                 for o in net.online() {
-                    net.act(o, cfr::Conference::resync);
+                    net.act(o, cfr_protocol::Conference::resync);
                 }
             }
             10 => {
@@ -282,7 +282,7 @@ fn one_run(seed: u64, steps: usize, checks: &mut Checks) {
     net.loss_percent = 0;
     for _ in 0..3 {
         for o in net.online() {
-            net.act(o, cfr::Conference::resync);
+            net.act(o, cfr_protocol::Conference::resync);
         }
     }
     if let Some(w) = net.online().first().copied() {
@@ -290,7 +290,7 @@ fn one_run(seed: u64, steps: usize, checks: &mut Checks) {
     }
     for _ in 0..2 {
         for o in net.online() {
-            net.act(o, cfr::Conference::resync);
+            net.act(o, cfr_protocol::Conference::resync);
         }
     }
     net.assert_agreement(&format!("seed {seed}: convergence after the run"));
@@ -363,7 +363,7 @@ fn randomized_media() {
         };
 
         // A forwarder can always read the routing metadata.
-        let t = cfr::Conference::inspect(&sealed).expect("inspectable");
+        let t = cfr_protocol::Conference::inspect(&sealed).expect("inspectable");
         assert_eq!(t.codec, codec);
 
         if rng.chance(15) {
@@ -454,7 +454,7 @@ fn arbitrary_control_input_never_panics() {
         }
         let _ = net.peers.get_mut(&b).unwrap().handle(&buf);
         let _ = net.peers.get_mut(&b).unwrap().open(&buf);
-        let _ = cfr::Conference::inspect(&buf);
+        let _ = cfr_protocol::Conference::inspect(&buf);
     }
     // The participant is still usable afterwards.
     assert!(net.peers[&b].members().contains(&a));

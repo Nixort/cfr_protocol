@@ -8,7 +8,7 @@ destination; delivering them is the application's job.
 A newcomer generates its own material and hands over a self-signed package:
 
 ```rust
-let joining = cfr::Joining::new(Policy::leaderless(2))?;
+let joining = cfr_protocol::Joining::new(Policy::leaderless(2))?;
 let package = joining.key_package();   // send to the inviter out of band
 ```
 
@@ -128,13 +128,13 @@ hand over material it does not have. Resync, then retry.
 
 ## 7. Durable process restart
 
-With the default `std` feature, `cfr::persistence::PersistentConference` owns a
+With the default `std` feature, `cfr_protocol::persistence::PersistentConference` owns a
 `Conference`, a bounded inbound idempotency window and a durable control-message
 outbox. It never exposes `&mut Conference`; every state-changing protocol and
 media operation crosses the same filesystem transaction boundary.
 
 ```rust
-use cfr::persistence::{InboundId, PersistentConference};
+use cfr_protocol::persistence::{InboundId, PersistentConference};
 
 let mut conference = PersistentConference::create("call-state", policy)?;
 

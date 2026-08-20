@@ -17,12 +17,12 @@ cargo-fuzz = true
 [package.metadata.cargo-machete]
 # cargo-machete analyzes the package root and cannot trace imports confined to
 # individual `fuzz_targets` binaries.
-ignored = ["arbitrary", "cfr"]
+ignored = ["arbitrary", "cfr_protocol"]
 
 [dependencies]
 libfuzzer-sys = "0.4"
 arbitrary     = { version = "1.4", features = ["derive"] }
-cfr        = { path = "../crates/cfr" }
+cfr_protocol = { path = "../crates/cfr" }
 cfr-core   = { path = "../crates/cfr-core" }
 cfr-crypto = { path = "../crates/cfr-crypto" }
 cfr-media  = { path = "../crates/cfr-media" }
